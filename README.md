@@ -1,1 +1,1 @@
-# pedestrian-tracker
+# pedestrian trajectory prediction using ddpm
