@@ -12,7 +12,7 @@ The key assumption is that generating a trajectory can be modeled as the reverse
 
 ## 3. Exploratory Data Analysis
 
-*To be completed after running experiments.*
+The exploratory analysis covers all five ETH/UCY scenes (ETH, Hotel, Univ, Zara1, Zara2) along three axes: dataset scale, motion statistics, and social structure. Scene size and crowd density vary substantially — Univ is by far the densest while ETH and Hotel are markedly sparser — and trajectory length distributions are heavy-tailed, with many pedestrians appearing only briefly at frame edges and only a fraction reaching the 20 frames required for the standard 8+12 history/future split. This directly constrains the amount of usable training data per scene. Pedestrian speeds cluster tightly around walking pace (roughly 1.0–1.5 m/s) with a long tail of near-stationary observations, meaning the model must handle both smooth motion and quasi-static segments. Position heatmaps reveal strong scene-specific spatial priors at doorways, sidewalk edges, and crossing points. Crucially, nearest-neighbor distance distributions validate the 3-meter attention radius used downstream: a meaningful fraction of pedestrians have at least one neighbor within 3 m at any given timestep, especially in Univ and the Zara scenes, confirming that neighbor interaction is a frequently-active signal rather than an edge case. These observations motivate two hypotheses for the modeling side: social conditioning should yield larger gains on dense scenes than on sparse ones, and cross-scene performance differences are likely driven as much by 8+12 data sparsity as by intrinsic scene difficulty.
 
 ## 4. Feature Engineering and Data Transformations
 
