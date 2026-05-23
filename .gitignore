@@ -1,0 +1,22 @@
+# Claude Code
+.claude/
+CLAUDE.md
+context.md
+
+# Upstream repo (kept locally for reference; not pushed)
+MID/
+
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# Training artifacts
+checkpoints/
+processed_data/
