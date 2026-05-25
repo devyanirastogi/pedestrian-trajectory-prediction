@@ -2,6 +2,28 @@
 
 A reimplementation of the MID framework ([Gu et al., 2022](https://arxiv.org/abs/2203.13777)) for pedestrian trajectory prediction on the ETH/UCY benchmark.
 
+## Repository Structure
+
+```
+ddpm/
+├── mid_model/            ← our reimplementation: diffusion model + glue code
+├── models/               ← Trajectron++ encoder (copied from MID, locally patched)
+├── environment/          ← Trajectron++ data classes: Environment, Scene, Node, SceneGraph (copied from MID)
+├── dataset/              ← dataset indexing + preprocessing (copied from MID)
+├── utils/                ← model registrar, hyperparams, transforms (copied from MID)
+├── MID/                  ← original MID repo, kept on disk for reference only (not on the runtime path)
+├── modal_train.py        ← Modal entrypoint for training (incl. leave-one-out runs)
+├── modal_eval.py         ← Modal entrypoint for evaluation
+├── notebooks/            ← EDA, training, evaluation, and diagnostic notebooks (+ figures/)
+├── raw_data/             ← raw ETH/UCY .txt files, one dir per scene with train/val/test splits
+├── processed_data/       ← dilled Environment .pkl files (one per scene × split)
+├── checkpoints/          ← saved model state dicts (incl. per-scene leave-one-out models)
+├── modal_eval_results/   ← evaluation outputs (.npz metric arrays)
+└── context.md            ← implementation reference: what was copied vs. reimplemented, and how it wires together
+```
+
+`mid_model/` is the only package we wrote from scratch. `models/`, `environment/`, `dataset/`, and `utils/` are direct copies of the same-named directories from the [original MID repo](https://github.com/gutianpei/MID) — kept under their original names so internal imports (e.g. `from environment.scene_graph import DirectedEdge`) keep resolving. See `context.md` for a file-by-file breakdown of what was inherited, what was reimplemented, and the patches applied to the copied code.
+
 ## 1. Problem Statement
 
 Predicting where pedestrians will walk in the next few seconds is important for applications like self-driving cars and social robots. The challenge is that human motion is inherently uncertain — given the same observed path, a person could turn left, keep going straight, or stop entirely. So the prediction system can't just output one trajectory; it needs to capture the full range of plausible futures. Previous approaches use GANs or CVAEs to model this multi-modality, but GANs are unstable to train and CVAEs tend to produce unrealistic trajectories. This paper takes a different approach: it treats trajectory prediction as a denoising diffusion process, starting from random noise (representing all possible walkable areas) and gradually refining it into a realistic trajectory. The model observes 3.2 seconds of past motion (8 timesteps) and predicts the next 4.8 seconds (12 timesteps).
